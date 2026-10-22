@@ -1,0 +1,15 @@
+# weights are downloaded by src/inference/download_weights.py (74.6 GB), never committed
+models/*
+!models/README.md
+src/inference/models
+src/inference/vendor_tf/
+src/inference/work/
+src/inference/.cache/
+# data and run outputs
+data/*
+!data/README.md
+out*/
+work*/
+__pycache__/
+*.pyc
+.cache/
