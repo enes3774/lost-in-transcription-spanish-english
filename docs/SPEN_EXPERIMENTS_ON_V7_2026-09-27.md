@@ -108,7 +108,7 @@ Voxtral v2 replaces v1 only if it wins on all three sets.
 
 - Two real slots left before the deadline (~2026-10-03); both built and validated as final packages.
 - Slot A: v8 (delta + súper + gap-fill + runtime fixes). Slot B: v8 plus whatever pending item wins on all three sets.
-- Súper is not worth a single-rule leaderboard A/B: an estimated ≈ 0.0005, below the pipeline's own
+- Súper is not worth a leaderboard slot of its own: an estimated ≈ 0.0005, below the pipeline's own
   vLLM run-to-run noise (~0.001).
 
 Paths: code `submission_v8_code` (builder `omni_rt/kfold/make_v8_code.py`), delta `qwen3_omni/lora_runs/miami_r16_AB/miami.pt`,
@@ -282,7 +282,7 @@ Running: Cohere concat-mix seed 3 (GPU 3, `cohere_train_concat.py`: p 0.5, same-
 As 8th voter (w16): seed 3 dev 0.0767 / long 0.0824 / Miami 0.1834 (fails dev); concat-mix 0.0771 / 0.0833 / 0.1827
 (fails dev + long); TTA Whisper + seed 3: 0.0761 / 0.0814 / 0.1799. **Seed 2 vs seed 3 as the 8th voter moved dev by
 0.0000 vs +0.0014 -> dev cannot resolve ~0.001 voter effects.** Concat-mix helps Miami mid-length clips but hurts the
-organizer-style audio (dev and long). A single-Cohere concat-mix package was built (packaged dev 0.1023 vs 0.1001 for the plain seed-2 single Cohere) -> predicted worse.
+organizer-style audio (dev and long).
 
 ## 9. New-member night (2026-09-28/29): canary, Granite NAR, Phi-4, MOSS
 
@@ -336,12 +336,10 @@ Dead: a strong member that is redundant with the others (Whisper-style encoder).
 
 ## 10. Concat-mix Cohere check + new-family night (2026-09-29/30)
 
-**Concat-mix single Cohere vs plain single Cohere:** 0.1184 vs 0.1201 (user-confirmed 2026-09-30; the old
-0.1223 note was wrong). Same main.py, clean run.
-Dev had predicted concat-mix worse (0.1023 vs 0.1001), Miami better. The difference is within test-sampling noise and within
-Cohere seed-to-seed spread (0.005 on dev), so it does not prove concat-mix helps. Inside the vote it hurts everywhere:
+**Concat-mix Cohere:** as a single model dev predicts it worse (0.1023 vs 0.1001), Miami better; the gap is within
+Cohere seed-to-seed spread (0.005 on dev). Inside the vote it hurts everywhere:
 v9 + concat Cohere w16 0.0763 / 0.0822 / 0.1803; v9 with Cohere swapped for it 0.0759 / 0.0822 / 0.1818; v8 swapped
-0.0767 / 0.0843 / 0.1852 (v9 0.0753 / 0.0811 / 0.1802). Those weights also cannot ship on main. -> v9 unchanged.
+0.0767 / 0.0843 / 0.1852 (v9 0.0753 / 0.0811 / 0.1802). -> v9 unchanged.
 
 New families tested on top of v9 (weight 8, fixed in advance; v9 on the same runs 0.0751-0.0753 / 0.0809-0.0811 / 0.1799):
 

@@ -34,7 +34,7 @@ Every model was fine-tuned on one corpus, the Bangor Miami code-switching conver
 | Miami folds A + B | two speaker-disjoint folds by conversation, about 19,600 clips | fine-tuning data for all eight members (10,933 clips after a 2 s minimum and quality filter for the audio-LLMs) |
 | Miami fold T | the remaining conversations, held out entirely | 600 clips (`Tsel600`) for checkpoint selection; the untouched 1,447-clip half as the third validation set |
 | Miami windows | consecutive same-speaker utterances joined (gap ≤ 5 s) into windows of up to 24 s: 6,951 windows, 21.6 h, median 10 s | training unit for the Whisper family; raw 2.3 s utterances taught models to stop early |
-| Competition dev set | 155 clips, 36 min, 2 speakers, 4,994 words | measurement only. Fine-tuning on it was tested and scored worse on the board, so it was never used for training |
+| Competition dev set | 155 clips, 36 min, 2 speakers, 4,994 words | measurement only. Fine-tuning on it could not be checked on any held-out set that contains the dev speakers, so it was rejected as an overfitting risk; it was never used for training |
 | Glued long set | 58 clips of 60–220 s built by gluing dev clips together | validation of long-clip handling (the long tail of the test set) |
 | Speed-perturbed test audio | the test clips resampled by 0.9× and 1.1× at run time | test-time augmentation for Whisper (two extra voters) |
 | CIEMPIESS | 28k Mexican Spanish conversation clips | tried as a 30 % mix on fold A: no change (vote 0.2110 → 0.2108 on Miami, dev 0.1065 → 0.1057), so not used |
@@ -83,7 +83,7 @@ Why we stopped working on the combiner: a decomposition on the Miami half showed
 
 ## Writing rules on the final transcript
 
-Nine small rules applied once, to the voted text, map Miami's transcription conventions to the organizers'; the first seven were verified on the leaderboard through single-model A/B tests and were worth about 0.016 WER together.
+Nine small rules applied once, to the voted text, map Miami's transcription conventions to the organizers'; together they were worth about 0.015 WER on dev, consistent with the v4 → v5 leaderboard step.
 
 | rule | why | measured effect |
 | --- | --- | --- |
@@ -120,8 +120,8 @@ A change shipped only if it was non-negative on three sets at once, with every w
 What we learned about the sets:
 
 - **Noise floor.** Re-decoding one member moves the vote by about 0.0005; vLLM runs are not bit-reproducible (about 0.001 on dev). Differences under 0.001 on dev were treated as ties, which is why per-clip better/worse counts were read alongside the WER.
-- **Transfer.** Dev gains reached the board at roughly a quarter to a third of their size (v5 → v7: dev −0.0064, board −0.0017), except for writing rules, which transferred one to one. The dev-to-board ratio of 1.22 held only for changes with no tuned settings.
-- **Dev fine-tuning does not help.** A speaker-disjoint experiment gave only −0.0026 on dev, and the same Cohere model with dev fine-tuning scored worse on the board than without it. The dev set stayed a measurement set.
+- **Transfer.** Dev gains reached the board at roughly a quarter to a third of their size (v5 → v7: dev −0.0064, board −0.0017). The dev-to-board ratio of 1.22 held only for changes with no tuned settings.
+- **Dev fine-tuning was not shipped.** A speaker-disjoint experiment gave only −0.0026 on dev, and the result could not be checked on any held-out set that contains the dev speakers, so it was rejected as an overfitting risk. The dev set stayed a measurement set.
 - **Selecting on Miami does not transfer either.** Every Miami-leaning change made after v8 (full fine-tunes, Miami-style Whisper, Voxtral Mini, omniASR) gained on short Miami clips and lost on dev; the board tracks dev, not Miami.
 
 The last submission is the honest end of this protocol: v9c beat v8 by 0.0004–0.0008 on dev and 0.004 on Miami, and scored the same 0.0993 on the board. A predicted gain of about 0.0002 is within the board's rounding.
@@ -178,7 +178,7 @@ The two steps that mattered were v5 (fair Miami-trained members plus the writing
 
 1. **Treat the combiner as a variable.** The vote's character-level setting was hard-coded and never questioned for two weeks; switching it to word level was worth more than any model. Parakeet was rejected eight times under the wrong setting.
 2. **One in-domain corpus, used carefully, beats more data.** Miami fixed the translation and language-choice errors every zero-shot model made. Extra corpora, synthetic speech and bigger fine-tunes added nothing once that was done.
-3. **Three validation sets and fixed weights.** Dev alone (two speakers) would have shipped the refiner, the dev fine-tune and several Miami-leaning members, all of which lost on the board. Deciding the weight before looking at the result kept the comparisons honest.
+3. **Three validation sets and fixed weights.** Dev alone (two speakers) would have shipped the refiner, which then lost on the board (v6), and the dev fine-tune, which no held-out set could check. Deciding the weight before looking at the result kept the comparisons honest.
 4. **Read the transcripts.** The error read-out showed that 43 % of the remaining dev errors were annotator conventions (hesitations, cut-off words, capitals) that no model can learn and no rule can fix; it stopped us chasing them.
 5. **Measure the noise floor first.** Re-decoding one member moves the vote by 0.0005, and the board shows four decimals; most of the last week's candidates were inside that band.
 6. **Make failure cheap.** Strict mode with no fallback means a broken run costs nothing (the slot is refunded) and a scored run is known to be the real pipeline.

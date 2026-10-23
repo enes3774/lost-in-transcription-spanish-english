@@ -46,7 +46,7 @@ audio clip ──┬─► Qwen3-Omni + Miami LoRA (vLLM) ───────�
   over 30 s, followed by a majority gap-fill. Word level (instead of character level) was the single largest gain.
 - **Post-processing of the output.** A repetition guard per member, then nine writing rules on the final text
   (`gonna → going to`, no `.!?` before `I`, `ah/er → uh`, underscores, `súper`, `quién`, ...), each verified on the dev
-  references and most of them one-to-one on the leaderboard.
+  references.
 
 Every change shipped only if it was non-negative on three validation sets at once (official dev, a glued long-clip set,
 the untouched Miami half) with weights fixed before measuring. Time spent: about three weeks (2026-09-10 to 2026-10-01),
@@ -291,7 +291,7 @@ measurement (8 for a new member, half the parent's weight for each speed copy). 
 `gonna/wanna/gotta/kinda/ok → going to/want to/got to/kind of/okay`; no `. ! ?` directly before `I / I'm / I'll / I've / I'd`
 (the scorer lower-cases the first letter after sentence punctuation); `ah/er → uh`; underscores (`Curious_George → Curious George`,
 `T_V → TV`); `super → súper`; `quien → quién`. Each rule was measured against the dev references and, for the first
-seven, verified one-to-one on the leaderboard through single-model A/B submissions (about −0.016 WER together).
+seven, worth about −0.015 WER together on dev, consistent with the v4 → v5 leaderboard step.
 
 ### Long clips (`src/inference/seg_long.py`)
 
@@ -316,8 +316,7 @@ A change shipped only if it was non-negative on three sets at once, with every w
 | glued long set | 58 clips of 60–220 s built from dev | long-clip regressions (the long tail) | 0.0814 |
 | Miami half (group T, held-out conversations) | 1,449 clips, speaker-disjoint from every fine-tune | overfitting to the two dev speakers | 0.1799 |
 
-Dev gains reached the leaderboard at roughly a quarter to a third of their size, except writing rules, which transferred
-one to one. Noise floor: re-decoding one member moves the vote by about 0.0005; vLLM runs differ by about 0.001 on dev.
+Dev gains reached the leaderboard at roughly a quarter to a third of their size. Noise floor: re-decoding one member moves the vote by about 0.0005; vLLM runs differ by about 0.001 on dev.
 
 ## Submission history
 
@@ -337,7 +336,7 @@ Measured and rejected (each at a fixed weight, on all three sets); details and n
 - Extra model families as voters: Nemotron 3.5 ASR, VibeVoice, Granite-speech NAR, MOSS, canary, Gemma-4 audio, SeamlessM4T-v2, w2v-BERT CTC, omniASR-LLM 3B/7B, Voxtral Mini, Whisper turbo, three public Spanglish Whisper checkpoints. Every one neutral or worse on at least one set.
 - Second copies of a member (Cohere seeds 2 and 3, Whisper seed and label-format siblings, Phi-4 seed 2, Qwen3-ASR and a second Whisper speed pair): Miami-only gains, dev flat.
 - An Omni "refiner" that re-transcribes each clip given the audio and all member texts (v6): better on dev, worse on the board.
-- Fine-tuning on the dev set (member and vote level): −0.0026 out-of-fold on dev, worse on the leaderboard.
+- Fine-tuning on the dev set (member and vote level): −0.0026 out-of-fold on dev, but it could not be checked on any held-out set that contains the dev speakers, so it was rejected as an overfitting risk.
 - Smarter combiners: plain `median`, minimum-Bayes-risk selection, CTC beam + Miami trigram, LLM rewrite, per-clip oracle selection. All lose to the word-level vote.
 - Full fine-tunes instead of LoRA (Qwen3-ASR, Whisper, Voxtral): better on Miami, worse on dev and long.
 - More Miami (2-epoch Omni, checkpoint soups, concatenation-trained long clips, retraining on all of Miami), other data (CIEMPIESS mix, synthetic TTS): flat.
