@@ -83,7 +83,7 @@ Why we stopped working on the combiner: a decomposition on the Miami half showed
 
 ## Writing rules on the final transcript
 
-Nine small rules applied once, to the voted text, map Miami's transcription conventions to the organizers'; together they were worth about 0.015 WER on dev, consistent with the v4 → v5 leaderboard step.
+Nine small rules applied once, to the voted text, map Miami's transcription conventions to the organizers'; their effect was measured on dev when each rule was added and recorded in the docstrings of `src/inference/spelling_rules.py`: five spelling rules, v5 five-way vote 0.0993 → 0.0897; casing guard 0.0897 → 0.0853; filler rule a further −0.0008 (the first seven together about −0.015); underscores neutral in the vote; `súper` 0.0773 → 0.0765 on the v8 vote; `quién` 0.0751 → 0.0747 on the v9 vote. The v4 → v5 leaderboard step (0.1190 → 0.1033) bundled the rules with member changes, so it is not an isolated measurement of them.
 
 | rule | why | measured effect |
 | --- | --- | --- |

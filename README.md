@@ -291,7 +291,7 @@ measurement (8 for a new member, half the parent's weight for each speed copy). 
 `gonna/wanna/gotta/kinda/ok → going to/want to/got to/kind of/okay`; no `. ! ?` directly before `I / I'm / I'll / I've / I'd`
 (the scorer lower-cases the first letter after sentence punctuation); `ah/er → uh`; underscores (`Curious_George → Curious George`,
 `T_V → TV`); `super → súper`; `quien → quién`. Each rule was measured against the dev references and, for the first
-seven, worth about −0.015 WER together on dev, consistent with the v4 → v5 leaderboard step.
+seven, measured on dev when each rule was added and recorded in the docstrings of `src/inference/spelling_rules.py`: five spelling rules, v5 five-way vote 0.0993 → 0.0897; casing guard 0.0897 → 0.0853; filler rule a further −0.0008 (the first seven together about −0.015); underscores neutral in the vote; `súper` 0.0773 → 0.0765 on the v8 vote; `quién` 0.0751 → 0.0747 on the v9 vote. The v4 → v5 leaderboard step (0.1190 → 0.1033) bundled the rules with member changes, so it is not an isolated measurement of them.
 
 ### Long clips (`src/inference/seg_long.py`)
 
